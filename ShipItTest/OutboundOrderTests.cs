@@ -57,7 +57,7 @@ namespace ShipItTest
                 }
             };
 
-            outboundOrderController.Post(outboundOrder);
+            outboundOrderController.ProcessOutboundOrder(outboundOrder);
 
             var stock = stockRepository.GetStockByWarehouseAndProductIds(WAREHOUSE_ID, new List<int>() { productId })[productId];
             Assert.AreEqual(stock.held, 7);
@@ -83,7 +83,7 @@ namespace ShipItTest
 
             try
             {
-                outboundOrderController.Post(outboundOrder);
+                outboundOrderController.ProcessOutboundOrder(outboundOrder);
                 Assert.Fail("Expected exception to be thrown.");
             }
             catch (InsufficientStockException e)
@@ -120,7 +120,7 @@ namespace ShipItTest
 
             try
             {
-                outboundOrderController.Post(outboundOrder);
+                outboundOrderController.ProcessOutboundOrder(outboundOrder);
                 Assert.Fail("Expected exception to be thrown.");
             }
             catch (InsufficientStockException e)
@@ -156,7 +156,7 @@ namespace ShipItTest
 
             try
             {
-                outboundOrderController.Post(outboundOrder);
+                outboundOrderController.ProcessOutboundOrder(outboundOrder);
                 Assert.Fail("Expected exception to be thrown.");
             }
             catch (NoSuchEntityException e)
@@ -190,7 +190,7 @@ namespace ShipItTest
 
             try
             {
-                outboundOrderController.Post(outboundOrder);
+                outboundOrderController.ProcessOutboundOrder(outboundOrder);
                 Assert.Fail("Expected exception to be thrown.");
             }
             catch (ValidationException e)

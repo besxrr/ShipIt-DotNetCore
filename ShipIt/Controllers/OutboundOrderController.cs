@@ -23,16 +23,17 @@ namespace ShipIt.Controllers
         }
 
         [HttpPost("")]
-        public void Post([FromBody] OutboundOrderRequestModel request)
+        public void ProcessOutboundOrder([FromBody] OutboundOrderRequestModel request)
         {
-            Log.Info(String.Format("Processing outbound order: {0}", request));
+            Log.Info($"Processing outbound order: {request}");
 
             var gtins = new List<String>();
             foreach (var orderLine in request.OrderLines)
             {
                 if (gtins.Contains(orderLine.gtin))
                 {
-                    throw new ValidationException(String.Format("Outbound order request contains duplicate product gtin: {0}", orderLine.gtin));
+                    throw new ValidationException(
+                        $"Outbound order request contains duplicate product gtin: {orderLine.gtin}");
                 }
                 gtins.Add(orderLine.gtin);
             }
@@ -48,14 +49,11 @@ namespace ShipIt.Controllers
             {
                 if (!products.ContainsKey(orderLine.gtin))
                 {
-                    errors.Add(string.Format("Unknown product gtin: {0}", orderLine.gtin));
+                    errors.Add($"Unknown product gtin: {orderLine.gtin}");
                 }
-                else
-                {
-                    var product = products[orderLine.gtin];
-                    lineItems.Add(new StockAlteration(product.Id, orderLine.quantity));
-                    productIds.Add(product.Id);
-                }
+                var product = products[orderLine.gtin];
+                lineItems.Add(new StockAlteration(product.Id, orderLine.quantity));
+                productIds.Add(product.Id);
             }
 
             if (errors.Count > 0)
@@ -67,6 +65,7 @@ namespace ShipIt.Controllers
 
             var orderLines = request.OrderLines.ToList();
             errors = new List<string>();
+            
 
             for (int i = 0; i < lineItems.Count; i++)
             {
@@ -75,7 +74,7 @@ namespace ShipIt.Controllers
 
                 if (!stock.ContainsKey(lineItem.ProductId))
                 {
-                    errors.Add(string.Format("Product: {0}, no stock held", orderLine.gtin));
+                    errors.Add($"Product: {orderLine.gtin}, no stock held");
                     continue;
                 }
 
@@ -83,8 +82,7 @@ namespace ShipIt.Controllers
                 if (lineItem.Quantity > item.held)
                 {
                     errors.Add(
-                        string.Format("Product: {0}, stock held: {1}, stock to remove: {2}", orderLine.gtin, item.held,
-                            lineItem.Quantity));
+                        $"Product: {orderLine.gtin}, stock held: {item.held}, stock to remove: {lineItem.Quantity}");
                 }
             }
 
