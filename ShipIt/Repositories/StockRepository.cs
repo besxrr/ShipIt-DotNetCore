@@ -14,6 +14,7 @@ namespace ShipIt.Repositories
         int GetTrackedItemsCount();
         int GetStockHeldSum();
         IEnumerable<StockDataModel> GetStockByWarehouseId(int id);
+        public IEnumerable<InboundQueryModel> QueryIncomingByWarehouseId(int id);
         Dictionary<int, StockDataModel> GetStockByWarehouseAndProductIds(int warehouseId, List<int> productIds);
         void RemoveStock(int warehouseId, List<StockAlteration> lineItems);
         void AddStock(int warehouseId, List<StockAlteration> lineItems);
@@ -36,9 +37,9 @@ namespace ShipIt.Repositories
 
         public IEnumerable<StockDataModel> GetStockByWarehouseId(int id)
         {
-            string sql = "SELECT p_id, hld, w_id FROM stock WHERE w_id = @w_id";
+            string sql = "SELECT * FROM stock WHERE w_id = @w_id";
             var parameter = new NpgsqlParameter("@w_id", id);
-            string noProductWithIdErrorMessage = string.Format("No stock found with w_id: {0}", id);
+            string noProductWithIdErrorMessage = $"No stock found with w_id: {id}";
             try
             {
                 return base.RunGetQuery(sql, reader => new StockDataModel(reader), noProductWithIdErrorMessage, parameter).ToList();
@@ -48,14 +49,29 @@ namespace ShipIt.Repositories
                 return new List<StockDataModel>();
             }
         }
+        
+        public IEnumerable<InboundQueryModel> QueryIncomingByWarehouseId(int id)
+        {
+            string sql = "SELECT * FROM gtin JOIN stock ON gtin.p_id = stock.p_id JOIN gcp ONstock.w_id = @w_id";
+            var parameter = new NpgsqlParameter("@w_id", id);
+            string noProductWithIdErrorMessage = $"No stock found with w_id: {id}";
+            try
+            {
+                return base.RunGetQuery(sql, reader => new InboundQueryModel(reader), noProductWithIdErrorMessage, parameter).ToList();
+            }
+            catch (NoSuchEntityException)
+            {
+                return new List<InboundQueryModel>();
+            }
+        }
 
         public Dictionary<int, StockDataModel> GetStockByWarehouseAndProductIds(int warehouseId, List<int> productIds)
         {
-            string sql = string.Format("SELECT p_id, hld, w_id FROM stock WHERE w_id = @w_id AND p_id IN ({0})",
-                String.Join(",", productIds));
+            string sql =
+                $"SELECT p_id, hld, w_id FROM stock WHERE w_id = @w_id AND p_id IN ({String.Join(",", productIds)})";
             var parameter = new NpgsqlParameter("@w_id", warehouseId);
-            string noProductWithIdErrorMessage = string.Format("No stock found with w_id: {0} and p_ids: {1}",
-                warehouseId, String.Join(",", productIds));
+            string noProductWithIdErrorMessage =
+                $"No stock found with w_id: {warehouseId} and p_ids: {String.Join(",", productIds)}";
             var stock = base.RunGetQuery(sql, reader => new StockDataModel(reader), noProductWithIdErrorMessage, parameter);
             return stock.ToDictionary(s => s.ProductId, s => s);
         }
@@ -90,8 +106,8 @@ namespace ShipIt.Repositories
             {
                 if (recordsAffected[i] == 0)
                 {
-                    errorMessage = String.Format("Product {0} in warehouse {1} was unexpectedly not updated (rows updated returned {2})",
-                        parametersList[i][0], warehouseId, recordsAffected[i]);
+                    errorMessage =
+                        $"Product {parametersList[i][0]} in warehouse {warehouseId} was unexpectedly not updated (rows updated returned {recordsAffected[i]})";
                 }
             }
 
@@ -103,8 +119,7 @@ namespace ShipIt.Repositories
 
         public void RemoveStock(int warehouseId, List<StockAlteration> lineItems)
         {
-            string sql = string.Format("UPDATE stock SET hld = hld - @hld WHERE w_id = {0} AND p_id = @p_id",
-                warehouseId);
+            string sql = $"UPDATE stock SET hld = hld - @hld WHERE w_id = {warehouseId} AND p_id = @p_id";
 
             var parametersList = new List<NpgsqlParameter[]>();
             foreach (var lineItem in lineItems)

@@ -46,7 +46,7 @@ namespace ShipIt.Repositories
         public ProductDataModel GetProductById(int id)
         {
 
-            string sql = "SELECT p_id, gtin_cd, gcp_cd, gtin_nm, m_g, l_th, ds, min_qt FROM gtin WHERE p_id = @p_id";
+            string sql = "SELECT * FROM gtin WHERE p_id = @p_id";
             var parameter = new NpgsqlParameter("@p_id", id);
             string noProductWithIdErrorMessage = $"No products found with id of value {id.ToString()}";
             return RunSingleGetQuery(sql, reader => new ProductDataModel(reader), noProductWithIdErrorMessage, parameter);

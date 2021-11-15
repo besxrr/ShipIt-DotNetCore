@@ -1,0 +1,7 @@
+SELECT * 
+FROM gtin 
+JOIN stock 
+ON gtin.p_id = stock.p_id 
+JOIN gcp 
+ON gcp.p_id = getin.p_id
+WHERE stock.w_id = @w_id

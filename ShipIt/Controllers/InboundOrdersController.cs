@@ -36,7 +36,7 @@ namespace ShipIt.Controllers
 
             Log.Debug($"Found operations manager: {operationsManager}");
 
-            var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
+            var allStock = _stockRepository.QueryIncomingByWarehouseId(warehouseId);
             // TODO - JOIN QUERY SO IT DOESNT HAVE TO GO BACK TO DATABASE FOR THE SAME DATA TWICE
             
             var orderLinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
