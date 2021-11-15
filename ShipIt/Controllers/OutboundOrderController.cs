@@ -37,7 +37,8 @@ namespace ShipIt.Controllers
                 }
                 gtins.Add(orderLine.gtin);
             }
-
+            
+            // TODO - Use product repo to get the m_g which is the weight and figure out how many trucks needed to finish the order (1 truck = 2000 kg)
             var productDataModels = _productRepository.GetProductsByGtin(gtins);
             var products = productDataModels.ToDictionary(p => p.Gtin, p => new Product(p));
 
