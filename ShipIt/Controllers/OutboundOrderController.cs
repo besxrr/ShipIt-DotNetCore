@@ -24,7 +24,7 @@ namespace ShipIt.Controllers
         }
 
         [HttpPost("")]
-        public void ProcessOutboundOrder([FromBody] OutboundOrderRequestModel request)
+        public OutboundOrderResponse ProcessOutboundOrder([FromBody] OutboundOrderRequestModel request)
         {
             Log.Info($"Processing outbound order: {request}");
 
@@ -39,7 +39,6 @@ namespace ShipIt.Controllers
                 gtins.Add(orderLine.gtin);
             }
             
-            // TODO - Use product repo to get the m_g which is the weight and figure out how many trucks needed to finish the order (1 truck = 2000 kg)
             var productDataModels = _productRepository.GetProductsByGtin(gtins);
             var products = productDataModels.ToDictionary(p => p.Gtin, p => new Product(p));
             var lineItems = new List<StockAlteration>();
@@ -47,14 +46,9 @@ namespace ShipIt.Controllers
             var errors = new List<string>();
             
             
-            var totalWeightOfOrder = 0.0f;
-            foreach (var orderLine in request.OrderLines)
-            {
-                var product = products[orderLine.gtin];
-                totalWeightOfOrder += (product.Weight * orderLine.quantity);
-            }
+            var totalWeightOfOrder = request.OrderLines.Sum(orderLine => products[orderLine.gtin].Weight * orderLine.quantity);
 
-            var totalAmountOfTrucks = Math.Ceiling(totalWeightOfOrder / 2000);
+            var totalAmountOfTrucks = Convert.ToInt32(Math.Ceiling(totalWeightOfOrder / 2000));
 
             foreach (var orderLine in request.OrderLines)
             {
@@ -103,6 +97,8 @@ namespace ShipIt.Controllers
             }
 
             _stockRepository.RemoveStock(request.WarehouseId, lineItems);
+
+            return new OutboundOrderResponse {TotalTrucks = totalAmountOfTrucks};
         }
     }
 }

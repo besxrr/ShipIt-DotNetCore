@@ -34,11 +34,12 @@ namespace ShipIt.Controllers
 
             var operationsManager = new Employee(_employeeRepository.GetOperationsManager(warehouseId));
 
-            Log.Debug(String.Format("Found operations manager: {0}", operationsManager));
+            Log.Debug($"Found operations manager: {operationsManager}");
 
             var allStock = _stockRepository.GetStockByWarehouseId(warehouseId);
-
-            Dictionary<Company, List<InboundOrderLine>> orderlinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
+            // TODO - JOIN QUERY SO IT DOESNT HAVE TO GO BACK TO DATABASE FOR THE SAME DATA TWICE
+            
+            var orderLinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
             foreach (var stock in allStock)
             {
                 Product product = new Product(_productRepository.GetProductById(stock.ProductId));
@@ -48,12 +49,12 @@ namespace ShipIt.Controllers
 
                     var orderQuantity = Math.Max(product.LowerThreshold * 3 - stock.held, product.MinimumOrderQuantity);
 
-                    if (!orderlinesByCompany.ContainsKey(company))
+                    if (!orderLinesByCompany.ContainsKey(company))
                     {
-                        orderlinesByCompany.Add(company, new List<InboundOrderLine>());
+                        orderLinesByCompany.Add(company, new List<InboundOrderLine>());
                     }
 
-                    orderlinesByCompany[company].Add( 
+                    orderLinesByCompany[company].Add( 
                         new InboundOrderLine()
                         {
                             gtin = product.Gtin,
@@ -63,9 +64,9 @@ namespace ShipIt.Controllers
                 }
             }
 
-            Log.Debug(String.Format("Constructed order lines: {0}", orderlinesByCompany));
+            Log.Debug($"Constructed order lines: {orderLinesByCompany}");
 
-            var orderSegments = orderlinesByCompany.Select(ol => new OrderSegment()
+            var orderSegments = orderLinesByCompany.Select(ol => new OrderSegment()
             {
                 OrderLines = ol.Value,
                 Company = ol.Key
@@ -92,7 +93,7 @@ namespace ShipIt.Controllers
             {
                 if (gtins.Contains(orderLine.gtin))
                 {
-                    throw new ValidationException(String.Format("Manifest contains duplicate product gtin: {0}", orderLine.gtin));
+                    throw new ValidationException($"Manifest contains duplicate product gtin: {orderLine.gtin}");
                 }
                 gtins.Add(orderLine.gtin);
             }
