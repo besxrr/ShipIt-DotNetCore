@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
  using Microsoft.AspNetCore.Mvc;
+ using NpgsqlTypes;
  using ShipIt.Exceptions;
 using ShipIt.Models.ApiModels;
 using ShipIt.Repositories;
@@ -41,10 +42,19 @@ namespace ShipIt.Controllers
             // TODO - Use product repo to get the m_g which is the weight and figure out how many trucks needed to finish the order (1 truck = 2000 kg)
             var productDataModels = _productRepository.GetProductsByGtin(gtins);
             var products = productDataModels.ToDictionary(p => p.Gtin, p => new Product(p));
-
             var lineItems = new List<StockAlteration>();
             var productIds = new List<int>();
             var errors = new List<string>();
+            
+            
+            var totalWeightOfOrder = 0.0f;
+            foreach (var orderLine in request.OrderLines)
+            {
+                var product = products[orderLine.gtin];
+                totalWeightOfOrder += (product.Weight * orderLine.quantity);
+            }
+
+            var totalAmountOfTrucks = Math.Ceiling(totalWeightOfOrder / 2000);
 
             foreach (var orderLine in request.OrderLines)
             {
