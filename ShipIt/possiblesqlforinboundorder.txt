@@ -1,7 +1,7 @@
-SELECT * 
+SELECT stock.w_id, stock.p_id
 FROM gtin 
 JOIN stock 
 ON gtin.p_id = stock.p_id 
 JOIN gcp 
-ON gcp.p_id = getin.p_id
+ON gcp.gcp_cd = gtin.gcp_cd
 WHERE stock.w_id = @w_id
