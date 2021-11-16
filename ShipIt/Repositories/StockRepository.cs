@@ -52,7 +52,7 @@ namespace ShipIt.Repositories
         
         public IEnumerable<InboundQueryModel> QueryIncomingByWarehouseId(int id)
         {
-            string sql = "SELECT * FROM gtin JOIN stock ON gtin.p_id = stock.p_id JOIN gcp ONstock.w_id = @w_id";
+            string sql = "SELECT stock.w_id, stock.p_id, stock.hld, gtin.gtin_cd, gtin.gtin_nm, gtin.m_g, gtin.l_th, gtin.ds, gtin.min_qt,gcp.gcp_cd, gcp.gln_nm, gcp.gln_addr_02, gcp.gln_addr_03, gcp.gln_addr_04, gcp.gln_addr_postalcode, gcp.gln_addr_city, gcp.contact_tel, gcp.contact_mail FROM gtin JOIN stock ON gtin.p_id = stock.p_id JOIN gcp ON gcp.gcp_cd = gtin.gcp_cd WHERE stock.w_id = @w_id";
             var parameter = new NpgsqlParameter("@w_id", id);
             string noProductWithIdErrorMessage = $"No stock found with w_id: {id}";
             try

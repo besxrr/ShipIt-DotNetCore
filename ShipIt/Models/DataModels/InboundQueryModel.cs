@@ -11,7 +11,7 @@ namespace ShipIt.Models.DataModels
         public int WarehouseId { get; set; }
         
         [DatabaseColumnName("hld")]
-        public int held { get; set; }
+        public int Held { get; set; }
         
         [DatabaseColumnName("p_id")]
         public int Id { get; set; }
@@ -21,9 +21,12 @@ namespace ShipIt.Models.DataModels
 
         [DatabaseColumnName("gcp_cd")]
         public string Gcp { get; set; }
+        
+        [DatabaseColumnName("gln_nm")]
+        public string GcpName { get; set; }
 
         [DatabaseColumnName("gtin_nm")]
-        public string Name { get; set; }
+        public string GtinName { get; set; }
 
         [DatabaseColumnName("m_g")]
         public double Weight { get; set; }

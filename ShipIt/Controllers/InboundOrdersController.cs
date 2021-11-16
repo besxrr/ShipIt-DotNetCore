@@ -37,18 +37,16 @@ namespace ShipIt.Controllers
             Log.Debug($"Found operations manager: {operationsManager}");
 
             var allStock = _stockRepository.QueryIncomingByWarehouseId(warehouseId);
-            // TODO - JOIN QUERY SO IT DOESNT HAVE TO GO BACK TO DATABASE FOR THE SAME DATA TWICE
-            
+
             var orderLinesByCompany = new Dictionary<Company, List<InboundOrderLine>>();
-            foreach (var stock in allStock)
+            
+            foreach (var product in allStock)
             {
-                Product product = new Product(_productRepository.GetProductById(stock.ProductId));
-                if(stock.held < product.LowerThreshold && !product.Discontinued)
+                if(product.Held < product.LowerThreshold && product.Discontinued == 0)
                 {
-                    Company company = new Company(_companyRepository.GetCompany(product.Gcp));
-
-                    var orderQuantity = Math.Max(product.LowerThreshold * 3 - stock.held, product.MinimumOrderQuantity);
-
+                    var orderQuantity = Math.Max(product.LowerThreshold * 3 - product.Held, product.MinimumOrderQuantity);
+                    var company = Company(product);
+                    
                     if (!orderLinesByCompany.ContainsKey(company))
                     {
                         orderLinesByCompany.Add(company, new List<InboundOrderLine>());
@@ -58,7 +56,7 @@ namespace ShipIt.Controllers
                         new InboundOrderLine()
                         {
                             gtin = product.Gtin,
-                            name = product.Name,
+                            name = product.GcpName,
                             quantity = orderQuantity
                         });
                 }
@@ -80,6 +78,23 @@ namespace ShipIt.Controllers
                 WarehouseId = warehouseId,
                 OrderSegments = orderSegments
             };
+
+            Company Company(InboundQueryModel product)
+            {
+                var company = new Company
+                {
+                    Name = product.GcpName,
+                    Gcp = product.Gcp,
+                    Addr2 = product.Addr2,
+                    Addr3 = product.Addr3,
+                    Addr4 = product.Addr4,
+                    PostalCode = product.PostalCode,
+                    City = product.City,
+                    Tel = product.Tel,
+                    Mail = product.Mail
+                };
+                return company;
+            }
         }
 
         [HttpPost("")]

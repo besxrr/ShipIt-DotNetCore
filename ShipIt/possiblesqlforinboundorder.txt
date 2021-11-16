@@ -1,4 +1,9 @@
-SELECT stock.w_id, stock.p_id
+SELECT stock.w_id, stock.p_id, stock.hld, 
+gtin.gtin_cd, gtin.gtin_nm, gtin.m_g, 
+gtin.l_th, gtin.ds, gtin.min_qt, ,gcp.gcp_cd, gcp.gln_nm, 
+gcp.gln_addr_02, gcp.gln_addr_03, gcp.gln_addr_04, 
+gcp.gln_addr_postalcode, gcp.gln_addr_city, gcp.contact_tel, 
+gcp.contact_mail 
 FROM gtin 
 JOIN stock 
 ON gtin.p_id = stock.p_id 
