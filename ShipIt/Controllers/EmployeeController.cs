@@ -22,29 +22,16 @@ namespace ShipIt.Controllers
         }
 
         [HttpGet("")]
-        public EmployeeResponse Get([FromQuery] string name)
+        public EmployeeResponse Get([FromQuery] int id)
         {
-            Log.Info($"Looking up employee by name: {name}");
+            Log.Info($"Looking up employee by id: {id}");
 
-            var employee = new Employee(_employeeRepository.GetEmployeeByName(name));
+            var employee = new Employee(_employeeRepository.GetEmployeeById(id));
 
             Log.Info("Found employee: " + employee);
             return new EmployeeResponse(employee);
         }
-
-        [HttpGet("{warehouseId}")]
-        public EmployeeResponse Get([FromRoute] int warehouseId)
-        {
-            Log.Info(String.Format("Looking up employee by id: {0}", warehouseId));
-
-            var employees = _employeeRepository
-                .GetEmployeesByWarehouseId(warehouseId)
-                .Select(e => new Employee(e));
-
-            Log.Info(String.Format("Found employees: {0}", employees));
-            
-            return new EmployeeResponse(employees);
-        }
+        
 
         [HttpPost("")]
         public Response Post([FromBody] AddEmployeesRequest requestModel)
@@ -68,19 +55,19 @@ namespace ShipIt.Controllers
         [HttpDelete("")]
         public void Delete([FromBody] RemoveEmployeeRequest requestModel)
         {
-            string name = requestModel.Name;
-            if (name == null)
+            int id = requestModel.Id;
+            if (id == null)
             {
-                throw new MalformedRequestException("Unable to parse name from request parameters");
+                throw new MalformedRequestException("Unable to parse id from request parameters");
             }
 
             try
             {
-                _employeeRepository.RemoveEmployee(name);
+                _employeeRepository.RemoveEmployee(id);
             }
             catch (NoSuchEntityException)
             {
-                throw new NoSuchEntityException("No employee exists with name: " + name);
+                throw new NoSuchEntityException("No employee exists with name: " + id);
             }
         }
     }

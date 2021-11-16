@@ -10,6 +10,7 @@ namespace ShipItTest.Builders
     public class EmployeeBuilder
     {
         private String Name = "Gissell Sadeem";
+        private int Id = 1;
         private int WarehouseId = 1;
         private EmployeeRole Role = EmployeeRole.OPERATIONS_MANAGER;
         private String Ext = "73996";
@@ -19,6 +20,13 @@ namespace ShipItTest.Builders
             this.Name = name;
             return this;
         }
+        
+        public EmployeeBuilder setId(int id)
+        {
+            this.Id = id;
+            return this;
+        }
+        
 
         public EmployeeBuilder setWarehouseId(int warehouseId)
         {

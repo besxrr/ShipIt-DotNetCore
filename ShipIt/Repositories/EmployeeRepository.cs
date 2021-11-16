@@ -14,11 +14,11 @@ namespace ShipIt.Repositories
     {
         int GetCount();
         int GetWarehouseCount();
-        EmployeeDataModel GetEmployeeByName(string name);
+        EmployeeDataModel GetEmployeeById(int id);
         IEnumerable<EmployeeDataModel> GetEmployeesByWarehouseId(int warehouseId);
         EmployeeDataModel GetOperationsManager(int warehouseId);
         void AddEmployees(IEnumerable<Employee> employees);
-        void RemoveEmployee(string name);
+        public void RemoveEmployee(int id);
     }
 
     public class EmployeeRepository : RepositoryBase, IEmployeeRepository
@@ -73,11 +73,11 @@ namespace ShipIt.Repositories
             };
         }
 
-        public EmployeeDataModel GetEmployeeByName(string name)
+        public EmployeeDataModel GetEmployeeById(int id)
         {
-            string sql = "SELECT name, w_id, role, ext FROM em WHERE name = @name";
-            var parameter = new NpgsqlParameter("@name", name);
-            string noProductWithIdErrorMessage = string.Format("No employees found with name: {0}", name);
+            string sql = "SELECT name, w_id, role, ext FROM em WHERE id = @id";
+            var parameter = new NpgsqlParameter("@id", id);
+            string noProductWithIdErrorMessage = string.Format("No employees found with id: {0}", id);
             return base.RunSingleGetQuery(sql, reader => new EmployeeDataModel(reader),noProductWithIdErrorMessage, parameter);
         }
 
@@ -120,10 +120,10 @@ namespace ShipIt.Repositories
             base.RunTransaction(sql, parametersList);
         }
 
-        public void RemoveEmployee(string name)
+        public void RemoveEmployee(int id)
         {
-            string sql = "DELETE FROM em WHERE name = @name";
-            var parameter = new NpgsqlParameter("@name", name);
+            string sql = "DELETE FROM em WHERE id = @id";
+            var parameter = new NpgsqlParameter("@id", id);
             var rowsDeleted = RunSingleQueryAndReturnRecordsAffected(sql, parameter);
             if (rowsDeleted == 0)
             {
