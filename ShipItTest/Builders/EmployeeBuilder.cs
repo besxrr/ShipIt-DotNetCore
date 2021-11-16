@@ -51,6 +51,7 @@ namespace ShipItTest.Builders
             return new EmployeeDataModel()
             {
                 Name = this.Name,
+                Id = this.Id,
                 WarehouseId = this.WarehouseId,
                 Role = this.Role.ToString(),
                 Ext = this.Ext
@@ -61,6 +62,7 @@ namespace ShipItTest.Builders
         {
             return new Employee() {
                 Name = this.Name,
+                Id = this.Id,
                 WarehouseId = this.WarehouseId,
                 role = this.Role,
                 ext = this.Ext
@@ -76,6 +78,7 @@ namespace ShipItTest.Builders
                     new Employee()
                     {
                         Name = this.Name,
+                        Id = this.Id,
                         WarehouseId = this.WarehouseId,
                         role = this.Role,
                         ext = this.Ext

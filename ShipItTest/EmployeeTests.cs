@@ -71,7 +71,7 @@ namespace ShipItTest
             }
             catch (NoSuchEntityException e)
             {
-                Assert.IsTrue(false);
+                Assert.IsTrue(e.Message.Contains(ID.ToString()));
             }
         }
 
@@ -122,7 +122,7 @@ namespace ShipItTest
             }
             catch (NoSuchEntityException e)
             {
-                Assert.IsTrue(e.Message.Contains(NAME));
+                Assert.IsTrue(e.Message.Contains(ID.ToString()));
             }
         }
 
@@ -139,7 +139,7 @@ namespace ShipItTest
             }
             catch (NoSuchEntityException e)
             {
-                Assert.IsTrue(e.Message.Contains(NAME));
+                Assert.IsTrue(e.Message.Contains(ID.ToString()));
             }
         }
 
