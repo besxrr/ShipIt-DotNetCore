@@ -24,7 +24,7 @@ namespace ShipItTest
             DotNetEnv.Env.Load();
             // Start from a clean slate
             string sql =
-                "TRUNCATE TABLE em;"
+                "TRUNCATE TABLE em RESTART IDENTITY ;"
                 + "TRUNCATE TABLE stock;"
                 + "TRUNCATE TABLE gcp;"
                 + "TRUNCATE TABLE gtin CASCADE;";

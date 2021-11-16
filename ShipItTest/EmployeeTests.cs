@@ -26,12 +26,12 @@ namespace ShipItTest
             var employee = new EmployeeBuilder().CreateEmployee();
             employeeRepository.AddEmployees(new List<Employee>() {employee});
             Assert.AreEqual(employeeRepository.GetEmployeeById(employee.Id).Id, employee.Id);
-            Assert.AreEqual(employeeRepository.GetEmployeeById(employee.Id).Ext, employee.Id);
-            Assert.AreEqual(employeeRepository.GetEmployeeById(employee.Id).WarehouseId, employee.Id);
+            Assert.AreEqual(employeeRepository.GetEmployeeById(employee.Id).Ext, employee.ext);
+            Assert.AreEqual(employeeRepository.GetEmployeeById(employee.Id).WarehouseId, employee.WarehouseId);
         }
 
         [Test]
-        public void TestGetEmployeeByName()
+        public void TestGetEmployeeById()
         {
             onSetUp();
             var employeeBuilder = new EmployeeBuilder().setId(ID);
@@ -62,7 +62,7 @@ namespace ShipItTest
 
         [Test]
         public void TestGetNonExistentEmployee()
-        {
+        { 
             onSetUp();
             try
             {
@@ -99,10 +99,10 @@ namespace ShipItTest
 
             var response = employeeController.Post(addEmployeesRequest);
             var databaseEmployee = employeeRepository.GetEmployeeById(ID);
-            var correctDatabaseEmploye = employeeBuilder.CreateEmployee();
+            var correctDatabaseEmployee = employeeBuilder.CreateEmployee();
 
             Assert.IsTrue(response.Success);
-            Assert.IsTrue(EmployeesAreEqual(new Employee(databaseEmployee), correctDatabaseEmploye));
+            Assert.IsTrue(EmployeesAreEqual(new Employee(databaseEmployee), correctDatabaseEmployee));
         }
 
         [Test]
