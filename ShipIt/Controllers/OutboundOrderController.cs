@@ -44,12 +44,16 @@ namespace ShipIt.Controllers
             var productDataModels = _productRepository.GetProductsByGtin(gtins);
             var products = productDataModels.ToDictionary(p => p.Gtin, p => new Product(p));
             var lineItems = new List<StockAlteration>();
+            var trucksForCurrentOrder = new Dictionary<int, List<Product>>();
+            var currentTruckProducts = new List<Product>();
             var productIds = new List<int>();
             var errors = new List<string>();
-            
-            
-            var totalAmountOfTrucks = CalculateTrucksRequired(request, products);
 
+
+            var totalAmountOfTrucks = trucksForCurrentOrder.Count;
+
+            float currentTruckWeight = 0;
+            
             foreach (var orderLine in request.OrderLines)
             {
                 if (!products.ContainsKey(orderLine.gtin))
@@ -57,6 +61,16 @@ namespace ShipIt.Controllers
                     errors.Add($"Unknown product gtin: {orderLine.gtin}");
                 }
                 var product = products[orderLine.gtin];
+                
+                
+                if ((currentTruckWeight + product.Weight * orderLine.quantity) < 2000)
+                {
+                    currentTruckWeight += product.Weight * orderLine.quantity;
+                    currentTruckProducts.Add(product);
+                }
+                trucksForCurrentOrder.Add(trucksForCurrentOrder.Count + 1, currentTruckProducts);
+                currentTruckProducts.Clear();
+                
                 lineItems.Add(new StockAlteration(product.Id, orderLine.quantity));
                 productIds.Add(product.Id);
             }

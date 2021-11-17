@@ -133,21 +133,5 @@ namespace ShipIt.Repositories
 
             base.RunTransaction(sql, parametersList);
         }
-        
-        public IEnumerable<LoadingTrucksModel> GetStockByProductGCP(string gtin)
-        {
-            string sql = "SELECT * FROM gtin JOIN stock ON gtin.p_id = stock.p_id WHERE gtin.gtin_cd = @gtin_cd";
-            var parameter = new NpgsqlParameter("@gtin_cd", gtin);
-            string noProductWithIdErrorMessage = $"No stock found with gtin value: {gtin}";
-            try
-            {
-                return base.RunGetQuery(sql, reader => new LoadingTrucksModel(reader), noProductWithIdErrorMessage, parameter).ToList();
-            }
-            catch (NoSuchEntityException)
-            {
-                return new List<LoadingTrucksModel>();
-            }
-        }
-        
     }
 }

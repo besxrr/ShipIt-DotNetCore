@@ -1,6 +1,7 @@
 using System.Data;
+using ShipIt.Models.DataModels;
 
-namespace ShipIt.Models.DataModels
+namespace ShipIt.Models.ApiModels
 {
     public class InboundQueryModel : DataModel
     {

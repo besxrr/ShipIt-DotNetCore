@@ -29,7 +29,7 @@ namespace ShipIt.Repositories
         public ProductDataModel GetProductByGtin(string gtin)
         {
 
-            string sql = "SELECT p_id, gtin_cd, gcp_cd, gtin_nm, m_g, l_th, ds, min_qt FROM gtin WHERE gtin_cd = @gtin_cd";
+            string sql = "SELECT p_id, gtin_cd, gcp_cd, gtin_nm, m_g, l_th, ds, min_qt FROM gtin WHERE gtin_cd = @gtin_cd ORDER BY gtin_cd DESC";
             var parameter = new NpgsqlParameter("@gtin_cd", gtin);
             return base.RunSingleGetQuery(sql, reader => new ProductDataModel(reader),
                 $"No products found with gtin of value {gtin}", parameter);

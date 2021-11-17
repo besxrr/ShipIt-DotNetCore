@@ -9,6 +9,8 @@ Diving the trucks:
 	Keep the numb of trucks at a minimal.
 
 Sort by unique gtin (13 Char)
-weight per order = weight * min because you cant have less than the minimum quantity.
+weight per order = weight * orderline.
 Taking into account the total weight of it, whenever 2000kg is met move on excess order to next
 avaliable truck
+
+
