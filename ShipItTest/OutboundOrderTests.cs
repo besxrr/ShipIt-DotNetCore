@@ -159,7 +159,7 @@ namespace ShipItTest
                 outboundOrderController.ProcessOutboundOrder(outboundOrder);
                 Assert.Fail("Expected exception to be thrown.");
             }
-            catch (NoSuchEntityException e)
+            catch (KeyNotFoundException e)
             {
                 Assert.IsTrue(e.Message.Contains(badGtin));
             }

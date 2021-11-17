@@ -15,6 +15,7 @@ namespace ShipIt.Repositories
         int GetCount();
         int GetWarehouseCount();
         EmployeeDataModel GetEmployeeById(int id);
+        IEnumerable<EmployeeDataModel> GetEmployeesByName(string name);
         IEnumerable<EmployeeDataModel> GetEmployeesByWarehouseId(int warehouseId);
         EmployeeDataModel GetOperationsManager(int warehouseId);
         void AddEmployees(IEnumerable<Employee> employees);
@@ -79,6 +80,14 @@ namespace ShipIt.Repositories
             var parameter = new NpgsqlParameter("@id", id);
             string noProductWithIdErrorMessage = string.Format("No employees found with id: {0}", id);
             return base.RunSingleGetQuery(sql, reader => new EmployeeDataModel(reader),noProductWithIdErrorMessage, parameter);
+        }
+        
+        public IEnumerable<EmployeeDataModel> GetEmployeesByName(string name)
+        {
+            string sql = "SELECT id, name, w_id, role, ext FROM em WHERE name = @name";
+            var parameter = new NpgsqlParameter("@name", name);
+            string noProductWithIdErrorMessage = $"No employees found with name: {name}";
+            return base.RunGetQuery(sql, reader => new EmployeeDataModel(reader),noProductWithIdErrorMessage, parameter);
         }
 
         public IEnumerable<EmployeeDataModel> GetEmployeesByWarehouseId(int warehouseId)
