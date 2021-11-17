@@ -1,0 +1,14 @@
+-- Creating the trucks needed per order--
+	Numb. of Trucks
+	Each truck contains ...
+	Total Weight of truck
+	
+Diving the trucks:
+	No more than 2000 kg per truck
+	Orders of a single product in the same truck
+	Keep the numb of trucks at a minimal.
+
+Sort by unique gtin (13 Char)
+weight per order = weight * min because you cant have less than the minimum quantity.
+Taking into account the total weight of it, whenever 2000kg is met move on excess order to next
+avaliable truck
