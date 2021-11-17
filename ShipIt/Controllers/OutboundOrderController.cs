@@ -6,6 +6,8 @@ using System.Linq;
  using ShipIt.Exceptions;
 using ShipIt.Models.ApiModels;
 using ShipIt.Repositories;
+ using static ShipIt_DotNetCore.Helpers.OutboundOrdersHelper;
+
 
 namespace ShipIt.Controllers
 {
@@ -46,9 +48,7 @@ namespace ShipIt.Controllers
             var errors = new List<string>();
             
             
-            var totalWeightOfOrder = request.OrderLines.Sum(orderLine => products[orderLine.gtin].Weight * orderLine.quantity);
-
-            var totalAmountOfTrucks = Convert.ToInt32(Math.Ceiling(totalWeightOfOrder / 2000));
+            var totalAmountOfTrucks = CalculateTrucksRequired(request, products);
 
             foreach (var orderLine in request.OrderLines)
             {
@@ -100,5 +100,6 @@ namespace ShipIt.Controllers
 
             return new OutboundOrderResponse {TotalTrucks = totalAmountOfTrucks};
         }
+        
     }
 }
